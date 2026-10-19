@@ -1,0 +1,3 @@
+package br.com.brindespro.security;
+import jakarta.persistence.*;import java.time.OffsetDateTime;
+@Entity @Table(name="users") public class AdminUser { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;@Column(nullable=false,unique=true) public String email;@Column(name="password_hash",nullable=false) public String passwordHash;@Column(nullable=false) public String name;@Column(nullable=false) public boolean active=true;@Column(name="created_at",nullable=false) public OffsetDateTime createdAt=OffsetDateTime.now();protected AdminUser(){} public AdminUser(String email,String passwordHash,String name){this.email=email;this.passwordHash=passwordHash;this.name=name;} }

@@ -1,0 +1,6 @@
+:root{--navy:#102650;--blue:#102650;--orange:#FF642F;--green:#159947;--line:#e1e7ef;--muted:#60708a;--bg:#F4F6F9;--content-max:1200px;--page-padding:32px;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;--section-space:var(--space-7);--radius:8px;--radius-lg:14px}
+.panel{border-radius:var(--radius);box-shadow:0 1px 3px rgb(16 38 80 / 6%)}
+.btn{min-height:40px;border-radius:6px;padding-inline:18px;font-size:12px}
+.input,.select,.textarea{border-radius:6px;min-height:38px}.textarea{min-height:104px}
+.section-heading{gap:var(--space-3)}
+@media(max-width:800px){:root{--page-padding:16px;--section-space:var(--space-6)}.btn{min-height:42px}.site-footer-grid{gap:24px}}

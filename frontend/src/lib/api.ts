@@ -1,0 +1,28 @@
+import type { AdminNotification, Category, Product, PriceResult, Quote, QuoteLine, Tier, TrackedOrder } from "./types";
+import { demoCategories, demoProductPage, demoProducts } from "./demo-catalog";
+const base = process.env.NEXT_PUBLIC_API_URL || "/api";
+export class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }
+export async function api<T>(path: string, options?: RequestInit): Promise<T> { let csrf="";if(options?.method&&options.method!=="GET"){const token=await fetch(`${base}/auth/csrf`,{credentials:"include"});if(token.ok)csrf=(await token.json()).token;}const res = await fetch(`${base}${path}`, { credentials: "include", ...options, headers: { ...(options?.body instanceof FormData ? {} : { "Content-Type": "application/json" }), ...(csrf?{"X-XSRF-TOKEN":csrf}:{}), ...options?.headers } }); if (!res.ok) { let message = "Não foi possível concluir a operação."; try { const data = await res.json(); message = data.message || message; } catch {} throw new ApiError(res.status, message); } if (res.status === 204) return undefined as T; return res.json(); }
+const withCatalogFallback = async <T>(remote: () => Promise<T>, fallback: () => T): Promise<T> => {
+  try { return await remote(); } catch { return fallback(); }
+};
+export const catalog = {
+  categories: () => withCatalogFallback(() => api<Category[]>("/categories"), () => demoCategories),
+  products: (params = "") => withCatalogFallback(() => api<{ content: Product[]; totalPages: number; totalElements: number }>(`/products${params}`), () => demoProductPage(params)),
+  product: (slug: string) => withCatalogFallback(() => api<Product>(`/products/${slug}`), () => {
+    const product = demoProducts.find(item => item.slug === slug);
+    if (!product) throw new ApiError(404, "Produto não encontrado.");
+    return product;
+  }),
+};
+export const pricing = (line: QuoteLine) => api<PriceResult>("/pricing/calculate", { method: "POST", body: JSON.stringify(line) });
+export const quotes = { create: (data: { customerName: string; company: string; phone: string; email: string; notes: string; items: QuoteLine[] }) => api<Quote>("/quotes", { method: "POST", body: JSON.stringify(data) }), get: (number: string) => api<Quote>(`/quotes/${number}`) };
+export const orders = { track: (number:string,email:string) => api<TrackedOrder>(`/orders/track?number=${encodeURIComponent(number)}&email=${encodeURIComponent(email)}`), list: (params="") => api<Quote[]>(`/admin/orders${params}`), detail:(id:number)=>api<TrackedOrder>(`/admin/orders/${id}`), update:(id:number,data:{status:string;internalNote:string;expectedDeliveryDate:string;trackingCode:string})=>api<TrackedOrder>(`/admin/orders/${id}/status`,{method:"PATCH",body:JSON.stringify(data)}), notifications:()=>api<AdminNotification[]>("/admin/notifications") };
+export type PortfolioProject = { id:number; name:string; segment:string; category:string; description:string; quantity:number; leadTime:string; finishType:string; imageUrl:string; featured:boolean; active:boolean };
+export const portfolio = { list:(segment="")=>api<PortfolioProject[]>(`/portfolio${segment?`?segment=${encodeURIComponent(segment)}`:""}`), featured:()=>api<PortfolioProject[]>("/portfolio/featured"), adminList:()=>api<PortfolioProject[]>("/admin/portfolio"), create:(data:Omit<PortfolioProject,"id">)=>api<PortfolioProject>("/admin/portfolio",{method:"POST",body:JSON.stringify(data)}), update:(id:number,data:Omit<PortfolioProject,"id">)=>api<PortfolioProject>(`/admin/portfolio/${id}`,{method:"PUT",body:JSON.stringify(data)}), remove:(id:number)=>api<void>(`/admin/portfolio/${id}`,{method:"DELETE"}) };
+export type ContactMessage = { id: string; name: string; email: string; phone: string; company?: string; subject: string; message: string; status: "NEW" | "IN_PROGRESS" | "RESOLVED"; createdAt: string };
+export const contactMessages = { create: (data: Omit<ContactMessage, "id" | "status" | "createdAt">) => api<ContactMessage>("/contact-messages", { method: "POST", body: JSON.stringify(data) }), list: () => api<ContactMessage[]>("/admin/contact-messages"), update: (id: string, status: ContactMessage["status"]) => api<ContactMessage>(`/admin/contact-messages/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }) };
+export const admin = { login: (email: string, password: string) => api<{ name: string }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }), me: () => api<{ name: string }>("/auth/me"), logout: () => api<void>("/auth/logout", { method: "POST" }), dashboard: () => api<Dashboard>("/admin/dashboard"), reports: (days: number) => api<Dashboard>(`/admin/reports?days=${days}`), quotes: (search = "") => api<Quote[]>(`/admin/quotes${search}`), products: () => api<Product[]>("/admin/products"), saveProduct: (product: Partial<Product>) => api<Product>(`/admin/products${product.id ? `/${product.id}` : ""}`, { method: product.id ? "PUT" : "POST", body: JSON.stringify(product) }), updateQuote: (id: number, status: string, note: string) => api<Quote>(`/admin/quotes/${id}`, { method: "PATCH", body: JSON.stringify({ status, note }) }), saveTiers: (id: number, tiers: Tier[]) => api<Tier[]>(`/admin/products/${id}/tiers`, { method: "PUT", body: JSON.stringify(tiers) }) };
+export type Dashboard = { quoteCount: number; estimatedValue: number; customerCount: number; productCount: number; dailyQuotes: { date: string; count: number }[]; topProducts: { name: string; count: number }[]; statusCounts: { status: string; count: number }[] };
+export function money(value: number) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value); }
+

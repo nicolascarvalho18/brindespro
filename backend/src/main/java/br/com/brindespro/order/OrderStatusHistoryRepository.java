@@ -1,0 +1,1 @@
+package br.com.brindespro.order;import org.springframework.data.jpa.repository.JpaRepository;import java.util.*;public interface OrderStatusHistoryRepository extends JpaRepository<OrderStatusHistory,Long>{List<OrderStatusHistory> findByQuote_IdOrderByCreatedAtAsc(Long quoteId);List<OrderStatusHistory> findByQuote_IdAndVisibleToCustomerTrueOrderByCreatedAtAsc(Long quoteId);}

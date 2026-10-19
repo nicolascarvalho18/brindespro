@@ -1,0 +1,3 @@
+package br.com.brindespro.catalog;
+import jakarta.persistence.*;
+@Entity @Table(name="product_variants") public class ProductVariant { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id; @ManyToOne(optional=false) @JoinColumn(name="product_id") public Product product; @Column(nullable=false) public String color; @Column(nullable=false) public String hex; @Column(name="image_url",nullable=false) public String imageUrl; @Column(nullable=false) public String material; protected ProductVariant(){} public ProductVariant(Product product,String color,String hex,String imageUrl,String material){this.product=product;this.color=color;this.hex=hex;this.imageUrl=imageUrl;this.material=material;} }

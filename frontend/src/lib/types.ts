@@ -1,0 +1,10 @@
+export type Category = { id: number; name: string; slug: string; imageUrl?: string };
+export type Variant = { id: number; color: string; hex: string; imageUrl: string; material: string };
+export type Tier = { id: number; minQuantity: number; maxQuantity: number | null; unitPrice: number };
+export type Product = { id: number; name: string; slug: string; description: string; category: Category; imageUrl: string; active: boolean; variants: Variant[]; tiers: Tier[]; images: { id: number; variantId: number | null; imageUrl: string; altText: string }[]; engravingOptions: string[]; minQuantity: number };
+export type QuoteLine = { productId: number; variantId: number; quantity: number; engraving: string; printingPosition: string; deadline: string; kitId?: number; logoFileId?: number; logoToken?: string; preview?: { x: number; y: number; scale: number } };
+export type PriceResult = { unitPrice: number; subtotal: number; surcharge: number; total: number; quantity: number; tierLabel: string; currency: string };
+export type Quote = { id: number; number: string; status: string; orderStatus?: string; customerName: string; company: string; phone: string; email: string; notes: string; total: number; createdAt: string; updatedAt?: string; expectedDeliveryDate?: string | null; trackingCode?: string; items: Array<QuoteLine & { productName: string; unitPrice: number; total: number; color: string; material: string }> };
+export type OrderHistory = { id: number; status: string; note: string; createdAt: string };
+export type TrackedOrder = { order: Quote; history: OrderHistory[] };
+export type AdminNotification = { id: string; type: string; message: string; orderId: number; createdAt: string };

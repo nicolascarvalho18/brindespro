@@ -1,0 +1,45 @@
+body {
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+}
+
+strong,
+b {
+  font-weight: 600;
+}
+
+p {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.nav-links {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btn {
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 17px;
+  }
+}

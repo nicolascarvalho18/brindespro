@@ -1,0 +1,3 @@
+package br.com.brindespro.portfolio;
+import jakarta.persistence.*;
+@Entity @Table(name="portfolio_testimonials") public class PortfolioTestimonial {@Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;@ManyToOne @JoinColumn(name="project_id") public PortfolioProject project;@Column(name="person_name",nullable=false) public String personName;@Column(nullable=false) public String role;@Column(nullable=false) public String company;@Column(nullable=false) public String segment;@Column(nullable=false,length=600) public String message;@Column(nullable=false) public boolean active=true;protected PortfolioTestimonial(){} }

@@ -1,0 +1,8 @@
+frontend/node_modules/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+frontend/.env.local
+backend/target/
+backend/private-uploads/
+backend/.env
+*.log

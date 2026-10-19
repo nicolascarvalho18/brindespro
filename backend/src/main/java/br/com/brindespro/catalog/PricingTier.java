@@ -1,0 +1,3 @@
+package br.com.brindespro.catalog;
+import jakarta.persistence.*;import java.math.BigDecimal;
+@Entity @Table(name="pricing_tiers") public class PricingTier { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id; @ManyToOne(optional=false) @JoinColumn(name="product_id") public Product product; @Column(name="min_quantity",nullable=false) public int minQuantity; @Column(name="max_quantity") public Integer maxQuantity; @Column(name="unit_price",nullable=false,precision=12,scale=2) public BigDecimal unitPrice; protected PricingTier(){} public PricingTier(Product product,int min,Integer max,BigDecimal price){this.product=product;this.minQuantity=min;this.maxQuantity=max;this.unitPrice=price;} }

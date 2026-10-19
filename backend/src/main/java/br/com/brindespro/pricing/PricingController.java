@@ -1,0 +1,3 @@
+package br.com.brindespro.pricing;
+import jakarta.validation.Valid;import org.springframework.web.bind.annotation.*;import java.math.BigDecimal;
+@RestController @RequestMapping("/api/pricing") public class PricingController { private final PricingService service;public PricingController(PricingService service){this.service=service;} public record Response(BigDecimal unitPrice,BigDecimal subtotal,BigDecimal surcharge,BigDecimal total,int quantity,String tierLabel,String currency){} @PostMapping("/calculate") public Response calculate(@Valid @RequestBody PricingService.Request request){var r=service.calculate(request);return new Response(r.unitPrice(),r.subtotal(),r.surcharge(),r.total(),r.quantity(),r.tierLabel(),r.currency());} }

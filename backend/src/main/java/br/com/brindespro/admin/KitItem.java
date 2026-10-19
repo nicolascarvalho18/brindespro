@@ -1,0 +1,2 @@
+package br.com.brindespro.admin;import jakarta.persistence.*;import br.com.brindespro.catalog.Product;
+@Entity @Table(name="kit_items") public class KitItem {@Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;@ManyToOne(optional=false) @JoinColumn(name="kit_id") public Kit kit;@ManyToOne(optional=false) @JoinColumn(name="product_id") public Product product;public int quantity;protected KitItem(){} public KitItem(Kit kit,Product product,int quantity){this.kit=kit;this.product=product;this.quantity=quantity;}}

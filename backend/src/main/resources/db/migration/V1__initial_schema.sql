@@ -1,0 +1,27 @@
+create table categories(id bigserial primary key,name varchar(150) not null,slug varchar(150) not null unique,image_url varchar(500));
+create table products(id bigserial primary key,category_id bigint not null references categories(id),name varchar(200) not null,slug varchar(200) not null unique,description varchar(2000),image_url varchar(500),active boolean not null default true,min_quantity integer not null default 5 check(min_quantity>=1),engraving_options varchar(500) not null default 'Laser');
+create index idx_products_category on products(category_id,active);
+create table colors(id bigserial primary key,name varchar(80) not null unique,hex varchar(20) not null);
+create table materials(id bigserial primary key,name varchar(80) not null unique);
+create table product_variants(id bigserial primary key,product_id bigint not null references products(id) on delete cascade,color varchar(80) not null,hex varchar(20) not null,image_url varchar(500) not null,material varchar(80) not null,unique(product_id,color));
+create table product_images(id bigserial primary key,product_id bigint not null references products(id) on delete cascade,variant_id bigint references product_variants(id) on delete cascade,image_url varchar(500) not null,alt_text varchar(250) not null,sort_order integer not null default 0);
+create table engraving_options(id bigserial primary key,name varchar(80) not null unique,active boolean not null default true,percent numeric(7,4) not null default 0);
+create table printing_positions(id bigserial primary key,name varchar(80) not null unique,percent numeric(7,4) not null default 0,active boolean not null default true);
+create table production_deadlines(id bigserial primary key,name varchar(80) not null unique,days integer not null check(days>0),percent numeric(7,4) not null default 0,active boolean not null default true);
+create table pricing_tiers(id bigserial primary key,product_id bigint not null references products(id) on delete cascade,min_quantity integer not null check(min_quantity>=1),max_quantity integer check(max_quantity>=min_quantity),unit_price numeric(12,2) not null check(unit_price>=0),unique(product_id,min_quantity));
+create index idx_tiers_product on pricing_tiers(product_id,min_quantity);
+create table kits(id bigserial primary key,name varchar(200) not null,active boolean not null default true,discount_percent numeric(7,4) not null default 0);
+create table kit_items(id bigserial primary key,kit_id bigint not null references kits(id) on delete cascade,product_id bigint not null references products(id),quantity integer not null check(quantity>0));
+create table customers(id bigserial primary key,name varchar(200) not null,company varchar(200) not null,phone varchar(30) not null,email varchar(250) not null,created_at timestamp with time zone not null default now());
+create index idx_customers_email on customers(email);
+create table users(id bigserial primary key,email varchar(250) not null unique,password_hash varchar(100) not null,name varchar(200) not null,active boolean not null default true,created_at timestamp with time zone not null default now());
+create table quotes(id bigserial primary key,number varchar(30) unique,customer_id bigint not null references customers(id),status varchar(40) not null default 'Registrado',notes varchar(1000),internal_note varchar(2000),total numeric(14,2) not null,created_at timestamp with time zone not null default now(),updated_at timestamp with time zone not null default now());
+create index idx_quotes_created_status on quotes(created_at,status);
+create table quote_items(id bigserial primary key,quote_id bigint not null references quotes(id) on delete cascade,product_id bigint references products(id),variant_id bigint references product_variants(id),product_name varchar(200) not null,color varchar(80) not null,material varchar(80) not null,quantity integer not null,engraving varchar(80) not null,printing_position varchar(80) not null,deadline varchar(80) not null,base_unit_price numeric(12,2) not null,unit_price numeric(12,2) not null,surcharge numeric(12,2) not null,line_total numeric(14,2) not null,logo_file_id bigint,preview_x numeric(6,2),preview_y numeric(6,2),preview_scale numeric(6,2));
+create table quote_files(id bigserial primary key,quote_id bigint references quotes(id) on delete set null,stored_name varchar(250) not null,original_name varchar(250) not null,mime_type varchar(100) not null,size_bytes bigint not null,created_at timestamp with time zone not null default now());
+alter table quote_items add constraint fk_quote_items_logo_file foreign key(logo_file_id) references quote_files(id);
+create table audit_logs(id bigserial primary key,user_id bigint references users(id),entity_type varchar(80) not null,entity_id bigint not null,action varchar(80) not null,details varchar(2000),created_at timestamp with time zone not null default now());
+insert into engraving_options(name,percent) values('Laser',0),('Silk-screen',0),('Tampografia',0),('Sublimação',0),('UV',0);
+insert into printing_positions(name,percent) values('Frente',0),('Frente e verso',0.25),('360°',0.36);
+insert into production_deadlines(name,days,percent) values('Padrão',15,0),('Urgente',7,0.15),('Super urgente',4,0.25);
+

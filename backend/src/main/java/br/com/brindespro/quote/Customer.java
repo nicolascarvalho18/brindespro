@@ -1,0 +1,3 @@
+package br.com.brindespro.quote;
+import jakarta.persistence.*;import java.time.OffsetDateTime;
+@Entity @Table(name="customers") public class Customer { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;@Column(nullable=false) public String name;@Column(nullable=false) public String company;@Column(nullable=false) public String phone;@Column(nullable=false) public String email;@Column(name="created_at",nullable=false) public OffsetDateTime createdAt=OffsetDateTime.now();protected Customer(){} public Customer(String name,String company,String phone,String email){this.name=name;this.company=company;this.phone=phone;this.email=email;} }

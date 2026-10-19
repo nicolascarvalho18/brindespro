@@ -1,0 +1,1 @@
+export function QueryState({loading,error,children}:{loading:boolean;error:unknown;children:React.ReactNode}){if(loading)return <div className="empty">Carregando dados...</div>;if(error)return <div className="error">Não foi possível carregar os dados. Verifique a conexão com a API e tente novamente.</div>;return <>{children}</>}

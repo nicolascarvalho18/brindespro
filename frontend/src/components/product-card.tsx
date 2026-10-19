@@ -1,0 +1,6 @@
+import Link from "next/link";
+import Image from "next/image";
+import type { Product } from "@/lib/types";
+import { money } from "@/lib/api";
+import { productImage } from "@/lib/product-image";
+export function ProductCard({product}:{product:Product}){const price=product.tiers.length?Math.min(...product.tiers.map(t=>t.unitPrice)):0;return <article className="product-card panel"><Link href={`/produto/${product.slug}`} className="card-photo"><Image src={productImage(product.imageUrl)} alt={product.name} width={360} height={360}/></Link><div className="card-body"><Link href={`/produto/${product.slug}`} className="card-title">{product.name}</Link><p className="card-sub">A partir de <strong className="price">{money(price)}</strong></p><Link className="btn btn-orange" href={`/produto/${product.slug}`}>Ver produto</Link></div><style jsx>{`.product-card{overflow:hidden;transition:transform .18s,box-shadow .18s}.product-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px #10254f18}.card-photo{display:block;aspect-ratio:1;background:#fff;overflow:hidden}.card-photo :global(img){width:100%;height:100%;object-fit:contain;padding:14px}.card-body{padding:12px}.card-title{font-size:13px;font-weight:700;display:block;min-height:33px}.card-sub{margin:8px 0;font-size:11px;color:#667085}.btn{width:100%}`}</style></article>}
