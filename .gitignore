@@ -1,8 +1,13 @@
 frontend/node_modules/
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
-frontend/.env.local
 backend/target/
 backend/private-uploads/
-backend/.env
+
+# Variáveis locais e segredos: nunca enviar ao Git.
+.env
+.env.*
+!.env.example
+!**/.env.example
+
 *.log
